@@ -1,0 +1,12 @@
+#mysql:
+#  :adapter: mysql
+#  :host: ssserver
+#  :username: root 
+#  :password: magrathea
+#  :database: acts_as_tree_on_steroids_plugin
+#  :encoding: utf8
+mysql:
+  adapter: sqlite3
+  database: acts_as_tree_on_steroids_plugin 
+  pool: 5
+  timeout: 5000
