@@ -31,6 +31,12 @@ Electronics
 
 The root node of SSD is Electronics but that's not the actually family of products because it covers a really big range. The actual family (depending on the application logic) can be Computers & Peripherals or Storage. If family_level is set to 1 for example, the family will be Computers & Peripherals.
 
+Installing 
+==========
+
+Install the plugin: 
+script/plugin install http://github.com/bandito/acts_as_tree_on_steroids.git
+
 Usage
 =====
 
