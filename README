@@ -1,6 +1,5 @@
-ActsAsTreeOnSteroids
-====================
 In a nutshell
+=============
 
 Extend classic acts_as_tree, acts_as_nested_set to support:
 
@@ -12,6 +11,7 @@ Extend classic acts_as_tree, acts_as_nested_set to support:
 * Configure a "family" based on the level (depth) that can be different from the root node
 
 Why?
+===
 
 The problem with classic acts_as_tree is that you need a large number of queries to retrieve the ascendants or descendants of a node. If you want the path of a node with a level of N , you need N – 1 queries. If you want all the children and grandchildren and so forth , you need to recurse at least N  times. This can become a pain if your tree is more than 3 or 4 levels. 
 Acts as nested set offers functionality to retrieve all descendants of a node with a single query, but you can't do the same for ancestors which is very usefull for a number of things (i.e breadcrumbs) 
@@ -19,6 +19,7 @@ Acts as nested set offers functionality to retrieve all descendants of a node wi
 If your application offers a hierarchical based browsing, you'll probably need to query the tree all the time to create breadcrumbs or lists with subcategories. Classic examples are ecommerce applications, price comparison sites etc. 
 
 Families:
+=========
 
 In ecommerce applications it's very common to have families of products or categories. For example:
 
@@ -31,6 +32,7 @@ Electronics
 The root node of SSD is Electronics but that's not the actually family of products because it covers a really big range. The actual family (depending on the application logic) can be Computers & Peripherals or Storage. If family_level is set to 1 for example, the family will be Computers & Peripherals.
 
 Usage
+=====
 
 Your model must have the following database tables:
 
@@ -51,6 +53,7 @@ class Category
 end
 
 How does it work
+================
 
 When a node is created or changes parent the id_path reflects the node path from the root to the node as a comma seperated value of ids. 
 For example a really small tree would look like this
@@ -75,11 +78,13 @@ The database will use the index on id_path since it's not starting with a wildca
 Likewise, if we wanted the ancestors of the node with id_path 1,6,11,17 we would just query for "id in (1,6,11,17)" to get them with a single query.
 
 When to use it
+==============
 
 * You have a category tree that rarely changes but you are doing breadcrumbs and tree representations all the time. 
 * You have to need to query for i.e products that belong to the current node and the descendant nodes
 
 When not to use it
+==================
 
 * If your tree changes frequently then the overhead of the tree traverse can be a pain.
 * You don't need to know the hierarchy of the node.
