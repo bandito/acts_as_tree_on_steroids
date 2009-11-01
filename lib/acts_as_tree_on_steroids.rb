@@ -68,7 +68,7 @@ module Fortytwo #:nodoc:
 	def ancestors(reload=false, include_node = false)
           return nil if is_root? || self.id_path.blank?
           @ancestors = self.class.find(:all, :conditions => "id in (#{self.id_path}) and id <> #{self.id}", :order => "level asc") if @ancestors.nil? || reload
-          include_path ? @ancestors << self : @ancestors 
+          include_node ? @ancestors << self : @ancestors 
         end
 
         def recalc #:nodoc:
