@@ -92,6 +92,13 @@ module Fortytwo #:nodoc:
           @descendants
         end
 
+        #returns descendant leafs
+        def leafs(reload=false)
+          return nil if is_leaf? || self.id_path.blank?
+          @leafs = self.class.find(:all, :conditions => "id_path like '#{self.id_path},%' and children_count=0") if @leafs.nil? || reload
+          @leafs
+        end
+
 	# Delets the current node and all the descendants of that node
         def delete_branch
           #we'll get all descendants by level descending order. That way we'll make sure deletion will come from children to parents

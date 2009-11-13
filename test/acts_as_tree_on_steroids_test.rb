@@ -471,4 +471,31 @@ class ActsAsTreeOnSteroidsTest < Test::Unit::TestCase
     assert_equal count -3, Category.count
   end
 
+  def test_should_calculate_leafs
+    @skroutz = Category.new
+    @skroutz.save
+
+    @cat1 = Category.new
+    @cat1.parent_id = @skroutz.id
+    @cat1.save
+
+    @cat1_1 = Category.new
+    @cat1_1.parent_id = @cat1.id
+    @cat1_1.save
+
+    @cat2 = Category.new
+    @cat2.parent_id = @skroutz.id
+    @cat2.save
+
+    @cat2_1 = Category.new
+    @cat2_1.parent_id = @cat2.id
+    @cat2_1.save
+
+    #skroutz must have changed
+    @skroutz.reload
+    assert 2, @skroutz.leafs.size
+    assert @skroutz.leafs.include? @cat1_1
+    assert @skroutz.leafs.include? @cat2_1
+  end
+
 end
