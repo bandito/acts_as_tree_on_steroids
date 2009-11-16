@@ -498,4 +498,34 @@ class ActsAsTreeOnSteroidsTest < Test::Unit::TestCase
     assert @skroutz.leafs.include? @cat2_1
   end
 
+  def test_minimum_tree
+    @skroutz = Category.new
+    @skroutz.save
+
+    @cat1 = Category.new
+    @cat1.parent_id = @skroutz.id
+    @cat1.save
+
+    @cat1_1 = Category.new
+    @cat1_1.parent_id = @cat1.id
+    @cat1_1.save
+
+    @cat2 = Category.new
+    @cat2.parent_id = @skroutz.id
+    @cat2.save
+
+    @cat2_1 = Category.new
+    @cat2_1.parent_id = @cat2.id
+    @cat2_1.save
+
+    #skroutz must have changed
+    @skroutz.reload
+    tree = Category.minimum_tree_for_leafs([@cat1_1.id])
+    assert_equal 3, tree.size
+    assert tree.include? @cat1
+    assert tree.include? @cat1_1
+    assert tree.include? @skroutz
+  end
+
+
 end

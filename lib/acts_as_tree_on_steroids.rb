@@ -41,6 +41,18 @@ module Fortytwo #:nodoc:
 	# for example if nodes represent categories in an electronics ecommerce site, Mobile Phones have a family of "Telecommunications" or "Electronic Devices"
 	# Usually the family is the parent root node, but the level of the family can be configured via :family_level 
 	attr_accessor :family_level
+
+        # Return the minimum tree that includes those leaf ids
+        def minimum_tree_for_leafs(ids)
+          # 1. Find all ids in leafs id_path
+          # 2. Fetch those ids by tree depth order.
+          id_in = ids.join(',')
+          leafs = self.find(:all, :conditions => "id in (#{id_in})")
+          id_paths = leafs.collect{ |l| l.id_path }
+          id_in_paths = id_paths.join(',')
+          self.find(:all, :conditions => "id in (#{id_in_paths})", :order => "id_path asc")
+        end
+
       end
 
       module InstanceMethods
