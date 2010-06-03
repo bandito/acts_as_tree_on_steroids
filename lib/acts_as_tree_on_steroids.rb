@@ -171,18 +171,26 @@ module Fortytwo #:nodoc:
           self.children_count = self.children.count if self.respond_to?(:children_count)
 
         end
+        
+        def parents(obj)
+          ( (obj.superclass ? parents(obj.superclass) : []) << obj)
+        end
+        
+        def top_parent_class(obj)
+          parents(obj)[2]
+        end
 
         def calculate_id_path
+          new_parent = top_parent_class(self.class).find(:first, :conditions => {:id => self.parent_id})
           #id_path
-          if self.parent.nil?
+          if new_parent.nil?
             self.id_path = self.id.to_s
           else
-            self.id_path = "#{self.parent.id_path},#{self.id}"
+            self.id_path = "#{new_parent.id_path},#{self.id}"
           end
         end
 
         def propagate_changes
-
           #update parent's children count
           if self.has_changed_parent?
 
