@@ -195,7 +195,7 @@ module Fortytwo #:nodoc:
           if self.has_changed_parent?
 
             #invoke current parent changes
-            self.parent.recalc if self.parent
+            self.class.find(self.parent_id).recalc if self.parent
 
             unless parent_id_was.nil?
               begin
