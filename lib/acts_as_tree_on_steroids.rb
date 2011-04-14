@@ -31,6 +31,10 @@ module Fortytwo #:nodoc:
           include Fortytwo::Acts::TreeOnSteroids::InstanceMethods
           extend Fortytwo::Acts::TreeOnSteroids::SingletonMethods
 
+          after_create :force_save_after_update
+          before_update :force_calculate_id_path_and_fields_before_update
+          after_update  :force_propagate_changes_after_update
+
           self.family_level = options[:family_level] || 0
         end
 
@@ -85,7 +89,7 @@ module Fortytwo #:nodoc:
 
         def recalc #:nodoc:
           #saving will trigger calculation_methods
-          save_with_validation(false)
+          save(:validation => false)
         end
 
 	# returns the descendants of this node 
@@ -131,27 +135,26 @@ module Fortytwo #:nodoc:
         def save_without_validation_and_callbacks
           #disable callbacks
           @skip_callbacks = true
-          save_with_validation(false)
+          save(:validation => false)
         end
 
-        def after_create #:nodoc:
+        def force_save_after_create #:nodoc:
           #force before_update callback. This way id_path and fields will be calculated
           self.save
         end
 
-        def before_update #:nodoc:
+        def force_calculate_id_path_and_fields_before_update #:nodoc:
           unless @skip_callbacks
             calculate_id_path
             calculate_fields
           end
         end
 
-        def after_update #:nodoc:
+        def force_propagate_changes_after_update #:nodoc:
           unless @skip_callbacks
             propagate_changes
           end
         end
-
 
         private
 
@@ -177,7 +180,9 @@ module Fortytwo #:nodoc:
         end
         
         def top_parent_class(obj)
-          parents(obj)[2]
+          # Must access the fourth object in the array in Rails 3+, otherwise access the third.
+            parents(obj)[3]
+
         end
 
         def calculate_id_path
@@ -195,7 +200,7 @@ module Fortytwo #:nodoc:
           if self.has_changed_parent?
 
             #invoke current parent changes
-            self.parent.recalc if self.parent
+            self.class.find(self.parent_id).recalc if self.parent
 
             unless parent_id_was.nil?
               begin
@@ -204,6 +209,11 @@ module Fortytwo #:nodoc:
                 #nothing to do, previous parent doesn't exist
               end
             end
+            
+            new_parent = top_parent_class(self.class).find(:first, :conditions => {:id => self.parent_id})
+            
+            new_parent.recalc if new_parent
+            
           end
 
           if !self.is_leaf?
