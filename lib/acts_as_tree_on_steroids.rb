@@ -195,7 +195,7 @@ module Fortytwo #:nodoc:
           if self.has_changed_parent?
 
             #invoke current parent changes
-            self.parent.recalc if self.parent
+            self.class.find(self.parent_id).recalc if self.parent
 
             unless parent_id_was.nil?
               begin
@@ -204,6 +204,11 @@ module Fortytwo #:nodoc:
                 #nothing to do, previous parent doesn't exist
               end
             end
+            
+            new_parent = top_parent_class(self.class).find(:first, :conditions => {:id => self.parent_id})
+            
+            new_parent.recalc if new_parent
+            
           end
 
           if !self.is_leaf?
